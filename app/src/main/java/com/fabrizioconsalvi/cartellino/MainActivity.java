@@ -1,11 +1,15 @@
 package com.fabrizioconsalvi.cartellino;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 
 import android.os.Bundle;
@@ -57,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 entrataTimbrata = true;
+                // Avvia il servizio CountdownService
+                startService(new Intent(getApplicationContext(), CountdownService.class));
+
                 countdownTextView.setVisibility(View.VISIBLE);
                 tvTempoRimanente.setVisibility(View.VISIBLE);
                 timbraButton.setEnabled(false);
@@ -77,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 entrataTimbrata = true;
+
+                // Interrompe il servizio CountdownService
+                stopService(new Intent(getApplicationContext(), CountdownService.class));
+
                 countdownTextView.setVisibility(View.VISIBLE);
                 tvTempoRimanente.setVisibility(View.VISIBLE);
                 timbraButton.setEnabled(true);
@@ -173,7 +184,23 @@ public class MainActivity extends AppCompatActivity {
         countDownTimer.start();
     }
 
+    // Aggiorna la countdownTextView con il tempo rimanente
+    private void updateCountdownTextView(long remainingTimeMillis) {
+        // Conversione del tempo rimanente in ore, minuti e secondi
+        int hours = (int) (remainingTimeMillis / (1000 * 60 * 60));
+        int minutes = (int) ((remainingTimeMillis % (1000 * 60 * 60)) / (1000 * 60));
+        int seconds = (int) ((remainingTimeMillis % (1000 * 60)) / 1000);
+
+        // Formatta il tempo rimanente nel formato desiderato (HH:mm:ss)
+        String formattedTime = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+
+        // Aggiorna la TextView con il tempo rimanente
+        countdownTextView.setText(formattedTime);
+    }
+
     private void updateCountdownTextView() {
+        // Conversione del tempo rimanente in ore, minuti e secondi
+
         int hours = (int) (remainingTimeMillis / (1000 * 60 * 60));
         int minutes = (int) ((remainingTimeMillis % (1000 * 60 * 60)) / (1000 * 60));
         int seconds = (int) ((remainingTimeMillis % (1000 * 60)) / 1000);
@@ -214,5 +241,30 @@ public class MainActivity extends AppCompatActivity {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
+    }
+
+    // Dichiarazione del BroadcastReceiver per ricevere l'aggiornamento del countdown
+    private BroadcastReceiver countdownReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long remainingTimeMillis = intent.getLongExtra("remaining_time", 0);
+            updateCountdownTextView(remainingTimeMillis);
+        }
+    };
+
+
+    // Registra il BroadcastReceiver nell'onResume dell'attività
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter("COUNTDOWN_UPDATE");
+        LocalBroadcastManager.getInstance(this).registerReceiver(countdownReceiver, intentFilter);
+    }
+
+    // Deregistra il BroadcastReceiver nell'onPause dell'attività
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(countdownReceiver);
     }
 }
