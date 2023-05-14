@@ -1,4 +1,4 @@
-package com.fabrizioconsalvi.timbramise;
+package com.fabrizioconsalvi.cartellino;
 
 import android.content.Context;
 

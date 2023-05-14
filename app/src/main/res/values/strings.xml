@@ -1,6 +1,11 @@
 <resources>
-    <string name="app_name">TimbraMise</string>
+    <string name="app_name">Timbra Cartellino</string>
     <string name="ordinario_diurno">ORDINARIO DIURNO (7.12)</string>
     <string name="uscita_con_ticket">USCITA CON TICKET (7.42)</string>
     <string name="compensazione_automatica">COMPENSAZIONE AUTOMATICA 01.30</string>
+    <string name="tempo_rimanente">Tempo rimanente allo scadere dell\'orario diurno</string>
+    <string name="timbra_entrata">TIMBRA ENTRATA</string>
+    <string name="timbra_uscita">TIMBRA USCITA</string>
+    <string name="reset">RESET</string>
+
 </resources>
