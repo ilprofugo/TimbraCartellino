@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 entrataTimbrata = true;
                 // Avvia il servizio CountdownService
-                startService(new Intent(getApplicationContext(), CountdownService.class));
+                //  startService(new Intent(getApplicationContext(), CountdownService.class));
 
                 countdownTextView.setVisibility(View.VISIBLE);
                 tvTempoRimanente.setVisibility(View.VISIBLE);
